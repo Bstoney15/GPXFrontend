@@ -27,16 +27,18 @@ struct ContentView: View {
             Text("Latitude: \(coordinates.lat)")
                 .font(.headline)
             
-            Map {
-                
+            Map (position: $position){
             }
             .mapStyle(.hybrid(elevation: .realistic))
             .safeAreaInset(edge: .bottom) {
                 HStack {
                     Button(action: {
-                        
+                        position = .region(
+                            MKCoordinateRegion(
+                            center: CLLocationCoordinate2D(latitude: coordinates.lat, longitude: coordinates.lon),
+                            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)))
                     }) {
-                        Text("Tap me")
+                        Text("Move to your location")
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
@@ -48,7 +50,8 @@ struct ContentView: View {
         }
         .task{
             do {
-                let osmData = try await getAsyncOSMData()
+                let osmData = try await getAsyncOSMData(lon: coordinates.lon, lat: coordinates.lat, radius: 100000)
+                print(osmData)
             } catch {
                 print("OSM Shit failed", error)
             }

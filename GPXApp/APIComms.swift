@@ -28,7 +28,9 @@ struct OSMElements : Codable {
 }
 
 
-func getAsyncOSMData() async throws -> OSMResponse {
+func getAsyncOSMData(lon: Double, lat: Double, radius: Double) async throws -> OSMResponse {
+    // Calls the overpass api with the long ass http
+    
     guard let url = URL(string: "https://overpass-api.de/api/interpreter") else {
         print("Invalid URL")
         let nothing = OSMResponse(version: 0.0, generator: "", osm3s: [:], elements: [])
@@ -38,11 +40,13 @@ func getAsyncOSMData() async throws -> OSMResponse {
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     
+    
+    // Trying out the around feature in the call. Should be useful for when user selects a distance they want i think
     let httpBody = """
     [out:json][timeout:25];
     // Define the bounding box for Overland Park, Kansas
     (
-      way["footway"="sidewalk"](38.8500,-94.7500,38.9900,-94.6400);
+      way["footway"="sidewalk"](around:\(radius),\(lat),\(lon));
     );
     out body;
     >;
