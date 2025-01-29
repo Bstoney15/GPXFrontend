@@ -46,7 +46,13 @@ func getAsyncOSMData(lon: Double, lat: Double, radius: Double) async throws -> O
     [out:json][timeout:25];
     // Define the bounding box for Overland Park, Kansas
     (
-      way["footway"="sidewalk"](around:\(radius),\(lat),\(lon));
+      // Select sidewalks that are NOT part of highways
+      way["footway"="sidewalk"](around:10000,37.334730,-122.406417)
+        [!highway];
+
+      // Include trails and paths
+      way["highway"="path"](around:10000,37.334730,-122.406417);
+      way["highway"="footway"](around:10000,37.334730,-122.406417);
     );
     out body;
     >;
